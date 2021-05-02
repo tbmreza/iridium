@@ -40,9 +40,10 @@ impl VM {
     // }
 
     pub fn run(&mut self) {
-        let mut done = false;
-        while !done {
-            done = self.execute_instruction();
+        let mut executing = Some(());
+
+        while executing.is_some() {
+            executing = self.execute_instruction();
         }
     }
 
@@ -50,16 +51,9 @@ impl VM {
         self.execute_instruction();
     }
 
-    // TODO bisa ngga jangan return bool.
-    // let mut executing = Some(());
-    // while executing.is_some() {
-    //   executing = self.execute_instruction();
-    // }
-    // return true -> None dan sebaliknya
-
-    fn execute_instruction(&mut self) -> bool {
+    fn execute_instruction(&mut self) -> Option<()> {
         if self.pc >= self.program.len() {
-            return true;
+            return None;
         }
 
         match self.decode_opcode() {
@@ -77,6 +71,22 @@ impl VM {
 
                 self.registers[self.next_8_bits() as usize] = r1 + r2;
             }
+            Opcode::SUB => {
+                let (r1, r2) = (
+                    self.registers[self.next_8_bits() as usize],
+                    self.registers[self.next_8_bits() as usize],
+                );
+
+                self.registers[self.next_8_bits() as usize] = r1 - r2;
+            }
+            Opcode::MUL => {
+                let (r1, r2) = (
+                    self.registers[self.next_8_bits() as usize],
+                    self.registers[self.next_8_bits() as usize],
+                );
+
+                self.registers[self.next_8_bits() as usize] = r1 * r2;
+            }
             Opcode::DIV => {
                 let (r1, r2) = (
                     self.registers[self.next_8_bits() as usize],
@@ -88,7 +98,7 @@ impl VM {
             }
             Opcode::HLT => {
                 println!("HLT encountered");
-                return true;
+                return None;
             }
             Opcode::JMP => {
                 let r1 = self.registers[self.next_8_bits() as usize];
@@ -158,11 +168,11 @@ impl VM {
             }
             _ => {
                 println!("Unrecognized opcode found. Terminating!");
-                return true;
+                return None;
             }
         }
 
-        false
+        Some(())
     }
 
     fn next_8_bits(&mut self) -> u8 {
@@ -341,7 +351,33 @@ mod tests {
         test_vm.run_once();
         assert_eq!(test_vm.registers[2], 15);
     }
-
+    #[test]
+    fn test_opcode_sub() {
+        let mut test_vm = VM::get_test_vm();
+        test_vm.program = vec![2, 0, 1, 2];
+        test_vm.registers[0] = 50;
+        test_vm.registers[1] = 5;
+        test_vm.run_once();
+        assert_eq!(test_vm.registers[2], 45);
+    }
+    #[test]
+    fn test_opcode_mul() {
+        let mut test_vm = VM::get_test_vm();
+        test_vm.program = vec![3, 0, 1, 2];
+        test_vm.registers[0] = 50;
+        test_vm.registers[1] = 5;
+        test_vm.run_once();
+        assert_eq!(test_vm.registers[2], 250);
+    }
+    #[test]
+    fn test_opcode_div() {
+        let mut test_vm = VM::get_test_vm();
+        test_vm.program = vec![4, 0, 1, 2];
+        test_vm.registers[0] = 50;
+        test_vm.registers[1] = 5;
+        test_vm.run_once();
+        assert_eq!(test_vm.registers[2], 10);
+    }
     // TODO sub mul div
     #[test]
     fn test_opcode_load() {
