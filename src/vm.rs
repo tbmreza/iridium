@@ -378,7 +378,7 @@ mod tests {
         test_vm.run_once();
         assert_eq!(test_vm.registers[2], 10);
     }
-    // TODO sub mul div
+    
     #[test]
     fn test_opcode_load() {
         let mut test_vm = VM::new();
