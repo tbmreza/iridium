@@ -1,4 +1,7 @@
-use std::io::{self, Write};
+use std::{
+    io::{self, Write},
+    num::ParseIntError,
+};
 
 use crate::vm::VM;
 
@@ -12,6 +15,16 @@ impl REPL {
     pub fn new() -> REPL {
         REPL::default()
     }
+
+    fn parse_hex(&mut self, input: &str) -> Vec<u8> {
+        let split = input.split(" ").collect::<Vec<&str>>();
+
+        split
+            .iter()
+            .filter_map(|s| u8::from_str_radix(s, 16).ok())
+            .collect::<Vec<u8>>()
+    }
+
     pub fn run(&mut self) {
         println!("<welcome_message>");
         loop {
@@ -29,19 +42,31 @@ impl REPL {
             self.command_buffer.push(buffer.to_string());
 
             match buffer {
+                ".program" => {
+                    println!("In VM's program vector:");
+                    println!("{:?}", &self.vm.program);
+                    // &self
+                    //     .vm
+                    //     .program
+                    //     .iter()
+                    //     .for_each(|instruction| println!("{}", instruction));
+                }
+                ".registers" => {
+                    println!("In VM's registers:");
+                    println!("{:?}", &self.vm.registers);
+                }
                 ".quit" => {
                     println!("exiting");
                     std::process::exit(0);
                 }
                 ".history" => {
-                    &self
-                        .command_buffer
-                        .iter()
-                        .for_each(|command| println!("{}", command));
+                    println!("{:?}", &self.command_buffer);
+                    // &self
+                    //     .command_buffer
+                    //     .iter()
+                    //     .for_each(|command| println!("{}", command));
                 }
-                _ => {
-                    println!("Invalid input")
-                }
+                _ => println!("Invalid input"),
             }
         }
     }

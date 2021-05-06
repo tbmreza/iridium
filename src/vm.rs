@@ -2,8 +2,8 @@ use crate::instruction::Opcode;
 
 #[derive(Debug, Default)]
 pub struct VM {
-    registers: [i32; 32],
-    program: Vec<u8>,
+    pub registers: [i32; 32],
+    pub program: Vec<u8>,
     pc: usize,
     remainder: u32,
     equal_flag: bool,
@@ -378,7 +378,7 @@ mod tests {
         test_vm.run_once();
         assert_eq!(test_vm.registers[2], 10);
     }
-    
+
     #[test]
     fn test_opcode_load() {
         let mut test_vm = VM::new();
