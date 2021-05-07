@@ -24,6 +24,9 @@ impl VM {
         test_vm
     }
 
+    pub fn add_byte(&mut self, b: u8) {
+        self.program.push(b);
+    }
     // pub fn prepend_header(mut b: Vec<u8>) -> Vec<u8> {
     //     let mut prepension = vec![];
     //     for byte in &PIE_HEADER_PREFIX {

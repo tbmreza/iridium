@@ -1,7 +1,4 @@
-use std::{
-    io::{self, Write},
-    num::ParseIntError,
-};
+use std::io::{self, Write};
 
 use crate::vm::VM;
 
@@ -45,11 +42,6 @@ impl REPL {
                 ".program" => {
                     println!("In VM's program vector:");
                     println!("{:?}", &self.vm.program);
-                    // &self
-                    //     .vm
-                    //     .program
-                    //     .iter()
-                    //     .for_each(|instruction| println!("{}", instruction));
                 }
                 ".registers" => {
                     println!("In VM's registers:");
@@ -61,12 +53,13 @@ impl REPL {
                 }
                 ".history" => {
                     println!("{:?}", &self.command_buffer);
-                    // &self
-                    //     .command_buffer
-                    //     .iter()
-                    //     .for_each(|command| println!("{}", command));
                 }
-                _ => println!("Invalid input"),
+                _ => {
+                    self.parse_hex(buffer)
+                        .iter()
+                        .for_each(|byte| self.vm.add_byte(*byte));
+                    self.vm.run_once();
+                }
             }
         }
     }
