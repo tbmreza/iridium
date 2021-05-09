@@ -1,9 +1,13 @@
 [package]
-name = "iridium"
-version = "0.1.0"
 authors = ["Reza Handzalah <reza.handzalah@mbiz.co.id>"]
 edition = "2018"
+name = "iridium"
+version = "0.1.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+nom = "^4.0"
+
+[dev-dependencies]
+nom = "^4.0"

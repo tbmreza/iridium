@@ -1,5 +1,8 @@
 use std::io::{self, Write};
 
+use nom::types::CompleteStr;
+
+use crate::assembler::program_parsers::program;
 use crate::vm::VM;
 
 #[derive(Default)]
@@ -55,10 +58,19 @@ impl REPL {
                     println!("{:?}", &self.command_buffer);
                 }
                 _ => {
-                    self.parse_hex(buffer)
-                        .iter()
-                        .for_each(|byte| self.vm.add_byte(*byte));
-                    self.vm.run_once();
+                    // // hex speaking repl
+                    // self.parse_hex(buffer)
+                    //     .iter()
+                    //     .for_each(|byte| self.vm.add_byte(*byte));
+                    // self.vm.run_once();
+
+                    if let Ok((rest, parsed_program)) = program(CompleteStr(buffer)) {
+                        let bytecode = parsed_program.to_bytes();
+                        bytecode.iter().for_each(|byte| self.vm.add_byte(*byte));
+                        self.vm.run_once();
+                    } else {
+                        println!("Unable to parse input");
+                    }
                 }
             }
         }
