@@ -4,6 +4,7 @@ use crate::instruction::Opcode;
 pub struct VM {
     pub registers: [i32; 32],
     pub program: Vec<u8>,
+    heap: Vec<u8>,
     pc: usize,
     remainder: u32,
     equal_flag: bool,
@@ -168,6 +169,15 @@ impl VM {
                     let r1 = self.registers[self.next_8_bits() as usize];
                     self.pc = r1 as usize;
                 }
+            }
+            Opcode::ALOC => {
+                let new_len = {
+                    let r1 = self.next_8_bits() as usize;
+                    let bytes = self.registers[r1];
+                    let new_len = self.heap.len() as i32 + bytes;
+                    new_len as usize
+                };
+                self.heap.resize(new_len, 0);
             }
             _ => {
                 println!("Unrecognized opcode found. Terminating!");
@@ -416,5 +426,13 @@ mod tests {
         assert_eq!(test_vm.pc, 0);
         assert_eq!(test_vm.remainder, 0);
         assert_eq!(test_vm.equal_flag, false);
+    }
+    #[test]
+    fn test_opcode_aloc() {
+        let mut test_vm = VM::get_test_vm();
+        test_vm.registers[0] = 1024;
+        test_vm.program = vec![17, 0, 0, 0];
+        test_vm.run_once();
+        assert_eq!(test_vm.heap.len(), 1024);
     }
 }

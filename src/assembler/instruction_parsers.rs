@@ -47,7 +47,7 @@ impl AssemblerInstruction {
         // let mut operands = vec![self.operand1, self.operand2, self.operand3];
         operands
             .iter()
-            .filter(|operand| operand.is_some()) 
+            .filter(|operand| operand.is_some())
             .map(|operand| **operand)
             .for_each(|t| {
                 AssemblerInstruction::extract_operand_bytes(t, &mut results);
@@ -58,7 +58,24 @@ impl AssemblerInstruction {
 }
 
 named!(
-    pub instruction_one<CompleteStr, AssemblerInstruction>,
+    // Zero args: hlt
+    instruction_0<CompleteStr, AssemblerInstruction>,
+    do_parse!(
+        opcode: opcode >>
+        opt!(nom::multispace) >>
+        (AssemblerInstruction {
+            label: None,
+            opcode,
+            operand1: None,
+            operand2: None,
+            operand3: None,
+        })
+    )
+);
+
+named!(
+    // Two args: load $0 #100
+    instruction_2<CompleteStr, AssemblerInstruction>,
     do_parse!(
         // opcode: opcode_load >>
         opcode: opcode >>
@@ -74,14 +91,42 @@ named!(
     )
 );
 
+named!(
+    // Three args: add $0 $1 $2
+    instruction_3<CompleteStr, AssemblerInstruction>,
+    do_parse!(
+        opcode: opcode >>
+        r1: register >>
+        r2: register >>
+        r3: register >>
+        (AssemblerInstruction {
+            label: None,
+            opcode,
+            operand1: Some(r1),
+            operand2: Some(r2),
+            operand3: Some(r3),
+        })
+    )
+);
+
+named!(
+    pub instruction<CompleteStr, AssemblerInstruction>,
+    do_parse!(
+        ins: alt!(
+            instruction_3 | instruction_2 | instruction_0
+        ) >>
+        ( ins )
+    )
+);
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::instruction::Opcode;
 
     #[test]
-    fn test_parse_instruction_one() {
-        let result = instruction_one(CompleteStr("load $0 #100\n"));
+    fn test_parse_instruction_2() {
+        let result = instruction_2(CompleteStr("load $0 #100\n"));
         assert_eq!(
             result.unwrap(),
             (
@@ -94,6 +139,24 @@ mod tests {
                     operand3: None,
                 }
             )
+        );
+    }
+
+    #[test]
+    fn test_parse_instruction_0() {
+        let result = instruction_0(CompleteStr("hlt\n"));
+        assert_eq!(
+            result,
+            Ok((
+                CompleteStr(""),
+                AssemblerInstruction {
+                    label: None,
+                    opcode: Token::Op { code: Opcode::HLT },
+                    operand1: None,
+                    operand2: None,
+                    operand3: None
+                }
+            ))
         );
     }
 }

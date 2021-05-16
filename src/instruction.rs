@@ -18,54 +18,47 @@ pub enum Opcode {
     LT,
     GT,
     JMPE,
+    ALOC,
     IGL,
+}
+
+enum V<'a> {
+    Word(&'a str),
+    Int(u8),
+}
+
+fn match_opcode(v: V) -> Opcode {
+    match v {
+        V::Int(0) | V::Word("load") => Opcode::LOAD,
+        V::Int(1) | V::Word("add") => Opcode::ADD,
+        V::Int(2) | V::Word("sub") => Opcode::SUB,
+        V::Int(3) | V::Word("mul") => Opcode::MUL,
+        V::Int(4) | V::Word("div") => Opcode::DIV,
+        V::Int(5) | V::Word("hlt") => Opcode::HLT,
+        V::Int(6) | V::Word("jmp") => Opcode::JMP,
+        V::Int(7) | V::Word("jmpf") => Opcode::JMPF,
+        V::Int(8) | V::Word("jmpb") => Opcode::JMPB,
+        V::Int(9) | V::Word("eq") => Opcode::EQ,
+        V::Int(10) | V::Word("neq") => Opcode::NEQ,
+        V::Int(11) | V::Word("gte") => Opcode::GTE,
+        V::Int(12) | V::Word("lte") => Opcode::LTE,
+        V::Int(13) | V::Word("lt") => Opcode::LT,
+        V::Int(14) | V::Word("gt") => Opcode::GT,
+        V::Int(15) | V::Word("jmpe") => Opcode::JMPE,
+        V::Int(17) | V::Word("aloc") => Opcode::ALOC,
+        _ => Opcode::IGL,
+    }
 }
 
 impl<'a> From<CompleteStr<'a>> for Opcode {
     fn from(v: CompleteStr<'a>) -> Self {
-        match v {
-            CompleteStr("load") => Opcode::LOAD,
-            CompleteStr("add") => Opcode::ADD,
-            CompleteStr("sub") => Opcode::SUB,
-            CompleteStr("mul") => Opcode::MUL,
-            CompleteStr("div") => Opcode::DIV,
-            CompleteStr("hlt") => Opcode::HLT,
-            CompleteStr("jmp") => Opcode::JMP,
-            CompleteStr("jmpf") => Opcode::JMPF,
-            CompleteStr("jmpb") => Opcode::JMPB,
-            CompleteStr("eq") => Opcode::EQ,
-            CompleteStr("neq") => Opcode::NEQ,
-            CompleteStr("gte") => Opcode::GTE,
-            CompleteStr("lte") => Opcode::LTE,
-            CompleteStr("lt") => Opcode::LT,
-            CompleteStr("gt") => Opcode::GT,
-            CompleteStr("jmpe") => Opcode::JMPE,
-            _ => Opcode::IGL,
-        }
+        match_opcode(V::Word(v.0))
     }
 }
 
 impl From<u8> for Opcode {
     fn from(v: u8) -> Self {
-        match v {
-            0 => Opcode::LOAD,
-            1 => Opcode::ADD,
-            2 => Opcode::SUB,
-            3 => Opcode::MUL,
-            4 => Opcode::DIV,
-            5 => Opcode::HLT,
-            6 => Opcode::JMP,
-            7 => Opcode::JMPF,
-            8 => Opcode::JMPB,
-            9 => Opcode::EQ,
-            10 => Opcode::NEQ,
-            11 => Opcode::GTE,
-            12 => Opcode::LTE,
-            13 => Opcode::LT,
-            14 => Opcode::GT,
-            15 => Opcode::JMPE,
-            _ => Opcode::IGL,
-        }
+        match_opcode(V::Int(v))
     }
 }
 

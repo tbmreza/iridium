@@ -64,7 +64,7 @@ impl REPL {
                     //     .for_each(|byte| self.vm.add_byte(*byte));
                     // self.vm.run_once();
 
-                    if let Ok((rest, parsed_program)) = program(CompleteStr(buffer)) {
+                    if let Ok((_rest, parsed_program)) = program(CompleteStr(buffer)) {
                         let bytecode = parsed_program.to_bytes();
                         bytecode.iter().for_each(|byte| self.vm.add_byte(*byte));
                         self.vm.run_once();
