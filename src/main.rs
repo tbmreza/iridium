@@ -10,3 +10,6 @@ fn main() {
     repl.run();
 }
  
+// TODO https://blog.subnetzero.io/post/building-language-vm-interlude-02/
+// pad until 32 bits?
+// INC, DEC (increment/decrement value in register)
