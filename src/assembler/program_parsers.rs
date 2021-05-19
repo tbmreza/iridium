@@ -2,11 +2,11 @@ use crate::assembler::instruction_parsers::{instruction, AssemblerInstruction};
 use nom::types::CompleteStr;
 
 #[derive(Debug, PartialEq)]
-pub struct Program {
-    instructions: Vec<AssemblerInstruction>,
+pub struct Program<'a> {
+    instructions: Vec<AssemblerInstruction<'a>>,
 }
 
-impl Program {
+impl<'a> Program<'a> {
     pub fn to_bytes(&self) -> Vec<u8> {
         let instructions = self.instructions.clone();
         instructions
