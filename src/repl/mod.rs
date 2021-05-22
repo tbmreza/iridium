@@ -1,4 +1,4 @@
-use std::io::{self, Write};
+use std::io::{self, Read, Write};
 
 use nom::types::CompleteStr;
 
@@ -42,6 +42,38 @@ impl REPL {
             self.command_buffer.push(buffer.to_string());
 
             match buffer {
+                ".load_file" => {
+                    print!("Enter path to source file:");
+
+                    let mut buf = String::new();
+                    let filepath = {
+                        stdin
+                            .read_line(&mut buf)
+                            .expect("unable to read line from user");
+                        let buf = buf.trim();
+                        std::path::Path::new(buf)
+                    };
+
+                    let mut source = String::new();
+                    let mut handle = std::fs::File::open(filepath).expect("file not found");
+                    handle
+                        .read_to_string(&mut source)
+                        .expect("error reading from file");
+
+                    match program(CompleteStr(&source)) {
+                        Ok((_rest, program)) => {
+                            self.vm.program.append(&mut program.to_bytes());
+                        }
+                        Err(e) => {
+                            println!("Unable to parse input: {:?}", e);
+                        }
+                    }
+                }
+                ".clear_program" => {
+                    println!("Clearing the following program:");
+                    println!("{:?}", &self.vm.program);
+                    self.vm.program.clear();
+                }
                 ".program" => {
                     println!("In VM's program vector:");
                     println!("{:?}", &self.vm.program);

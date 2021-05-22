@@ -1,13 +1,26 @@
-use crate::assembler::Token;
+use crate::assembler::label_parsers::label_usage;
 use crate::assembler::register_parsers::register;
+use crate::assembler::Token;
 use nom::digit;
 use nom::types::CompleteStr;
 
-// TODO yang ini udah sama atau belum. kalau udah di unittest
+named!(pub irstring<CompleteStr, Token>,
+    do_parse!(
+        tag!("'") >>
+        content: take_until!("'") >>
+        tag!("'") >>
+        (Token::IrString {
+            name: &content
+        })
+    )
+);
+
 named!(pub operand<CompleteStr, Token>,
     alt!(
         integer_operand |
-        register
+        label_usage |
+        register |
+        irstring
     )
 );
 
@@ -16,7 +29,7 @@ named!(pub integer_operand<CompleteStr, Token>,
         do_parse!(
             tag!("#") >>
             reg_num: digit >>
-            (Token::IntOperand { 
+            (Token::IntOperand {
                 value: reg_num.parse::<i32>().unwrap()
             })
         )
