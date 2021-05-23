@@ -3,7 +3,7 @@ use nom::types::CompleteStr;
 
 #[derive(Debug, PartialEq)]
 pub struct Program<'a> {
-    instructions: Vec<AssemblerInstruction<'a>>,
+    pub instructions: Vec<AssemblerInstruction<'a>>,
 }
 
 impl<'a> Program<'a> {

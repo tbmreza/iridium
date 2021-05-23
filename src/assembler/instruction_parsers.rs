@@ -5,9 +5,7 @@ use crate::assembler::register_parsers::register;
 use crate::assembler::Token;
 use nom::types::CompleteStr;
 #[derive(Debug, PartialEq, Clone, Copy)]
-// #[derive(Debug, PartialEq, Clone)]
 pub struct AssemblerInstruction<'a> {
-    // label: Option<&'static str>,
     pub label: Option<Token<'a>>,
     pub directive: Option<Token<'a>>,
     pub opcode: Option<Token<'a>>,
@@ -17,6 +15,19 @@ pub struct AssemblerInstruction<'a> {
 }
 
 impl<'a> AssemblerInstruction<'a> {
+    pub fn label_name(&self) -> Option<&'a str> {
+        // let instruction = self.clone();
+        if let AssemblerInstruction {
+            label: Some(Token::LabelDecl { name }),
+            ..
+        // } = instruction
+        } = self.to_owned()
+        {
+            Some(name)
+        } else {
+            None
+        }
+    }
     fn extract_operand_bytes(t: Token, results: &mut Vec<u8>) {
         match t {
             Token::Op { .. } => {
