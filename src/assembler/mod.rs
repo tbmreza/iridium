@@ -64,6 +64,25 @@ pub struct SymbolTable {
     symbols: Vec<Symbol>,
 }
 
+impl SymbolTable {
+    pub fn new() -> Self {
+        SymbolTable::default()
+    }
+
+    pub fn add_symbol(&mut self, s: Symbol) {
+        self.symbols.push(s);
+    }
+
+    pub fn symbol_value(&self, s: &str) -> Option<u32> {
+        for symbol in &self.symbols {
+            if symbol.name == s {
+                return Some(symbol.offset);
+            }
+        }
+        None
+    }
+}
+
 impl Assembler {
     pub fn new() -> Assembler {
         Assembler::default()
@@ -114,4 +133,37 @@ pub enum Token<'a> {
     LabelUsage { name: &'a str },
     Directive { name: &'a str },
     IrString { name: &'a str },
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::vm::VM;
+
+    #[test]
+    fn test_symbol_table() {
+        let mut sym = SymbolTable::new();
+        let new_symbol = Symbol::new("test", SymbolType::Label, 12);
+        sym.add_symbol(new_symbol);
+        assert_eq!(sym.symbols.len(), 1);
+        let v = sym.symbol_value("test");
+        assert_eq!(true, v.is_some());
+        let v = v.unwrap();
+        assert_eq!(v, 12);
+        let v = sym.symbol_value("does_not_exist");
+        assert_eq!(v.is_some(), false);
+    }
+
+    #[test]
+    #[ignore]
+    fn test_assemble_program() {
+        let mut asm = Assembler::new();
+        let test_string =
+            "load $0 #100\nload $1 #1\nload $2 #0\ntest: inc $0\nneq $0 $2\njmpe @test\nhlt";
+        let program = asm.assemble(test_string).unwrap();
+        let mut vm = VM::new();
+        assert_eq!(program.len(), 21);
+        vm.add_bytes(program);
+        assert_eq!(vm.program.len(), 21);
+    }
 }

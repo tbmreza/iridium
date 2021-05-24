@@ -28,6 +28,11 @@ impl VM {
     pub fn add_byte(&mut self, b: u8) {
         self.program.push(b);
     }
+
+    pub fn add_bytes(&mut self, mut b: Vec<u8>) {
+        self.program.append(&mut b);
+    }
+
     // pub fn prepend_header(mut b: Vec<u8>) -> Vec<u8> {
     //     let mut prepension = vec![];
     //     for byte in &PIE_HEADER_PREFIX {
@@ -178,6 +183,12 @@ impl VM {
                     new_len as usize
                 };
                 self.heap.resize(new_len, 0);
+            }
+            Opcode::INC => {
+                let r1 = self.next_8_bits() as usize;
+                self.registers[r1] += 1;
+                self.next_8_bits();
+                self.next_8_bits();
             }
             _ => {
                 println!("Unrecognized opcode found. Terminating!");

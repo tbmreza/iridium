@@ -19,6 +19,7 @@ pub enum Opcode {
     GT,
     JMPE,
     ALOC,
+    INC,
     IGL,
 }
 
@@ -46,6 +47,7 @@ fn match_opcode(v: V) -> Opcode {
         V::Int(14) | V::Word("gt") => Opcode::GT,
         V::Int(15) | V::Word("jmpe") => Opcode::JMPE,
         V::Int(17) | V::Word("aloc") => Opcode::ALOC,
+        V::Int(18) | V::Word("inc") => Opcode::INC,
         _ => Opcode::IGL,
     }
 }
