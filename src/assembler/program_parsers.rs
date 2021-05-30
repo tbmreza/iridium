@@ -1,3 +1,4 @@
+use super::SymbolTable;
 use crate::assembler::instruction_parsers::{instruction, AssemblerInstruction};
 use nom::types::CompleteStr;
 
@@ -7,12 +8,12 @@ pub struct Program<'a> {
 }
 
 impl<'a> Program<'a> {
-    pub fn to_bytes(&self) -> Vec<u8> {
+    pub fn to_bytes(&self, symbols: &SymbolTable) -> Vec<u8> {
         let instructions = self.instructions.clone();
         instructions
             .iter()
             .fold(Vec::new(), |mut acc, instruction| {
-                acc.append(&mut instruction.to_bytes());
+                acc.append(&mut instruction.to_bytes(symbols));
                 acc
             })
     }
@@ -45,7 +46,8 @@ mod tests {
         let result = program(CompleteStr("load $0 #100\n"));
         assert!(result.is_ok());
         let (_, program) = result.unwrap();
-        let bytecode = program.to_bytes();
+        let symbols = SymbolTable::new();
+        let bytecode = program.to_bytes(&symbols);
         assert_eq!(bytecode.len(), 4);
         println!("{:?}", bytecode);
     }

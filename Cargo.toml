@@ -8,6 +8,9 @@ version = "0.1.0"
 
 [dependencies]
 nom = "^4.0"
+clap = { version = "2.32", features = ["yaml"] }
+byteorder = "1"
 
 [dev-dependencies]
 nom = "^4.0"
+clap = { version = "2.32", features = ["yaml"] }

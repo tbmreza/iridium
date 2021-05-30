@@ -1,10 +1,3 @@
-use std::str;
-
-use nom::types::CompleteStr;
-
-use crate::instruction::Opcode;
-
-use self::program_parsers::Program;
 mod directive_parsers;
 mod instruction_parsers;
 mod label_parsers;
@@ -13,10 +6,15 @@ mod operand_parsers;
 pub mod program_parsers;
 mod register_parsers;
 
+use self::program_parsers::Program;
+use crate::instruction::Opcode;
+use nom::types::CompleteStr;
+use std::str;
+
 #[derive(Debug, Default)]
 pub struct Assembler {
     pub phase: AssemblerPhase,
-    pub symbol_table: SymbolTable,
+    pub symbols: SymbolTable,
 }
 
 #[derive(Debug)]
@@ -107,7 +105,7 @@ impl Assembler {
         for i in &p.instructions {
             if let Some(label_name) = i.label_name() {
                 let s = Symbol::new(label_name, SymbolType::Label, c);
-                self.symbol_table.symbols.push(s);
+                self.symbols.symbols.push(s);
             }
             c += 4;
         }
@@ -116,7 +114,7 @@ impl Assembler {
     fn phase2_process(&mut self, p: &Program) -> Vec<u8> {
         let mut assembled = Vec::new();
         for i in &p.instructions {
-            let mut instruction = i.to_bytes();
+            let mut instruction = i.to_bytes(&self.symbols);
             assembled.append(&mut instruction);
         }
         assembled
@@ -155,7 +153,7 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
+    // #[ignore]
     fn test_assemble_program() {
         let mut asm = Assembler::new();
         let test_string =

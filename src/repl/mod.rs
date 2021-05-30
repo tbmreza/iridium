@@ -1,14 +1,14 @@
-use std::io::{self, Read, Write};
-
-use nom::types::CompleteStr;
-
 use crate::assembler::program_parsers::program;
+use crate::assembler::Assembler;
 use crate::vm::VM;
+use nom::types::CompleteStr;
+use std::io::{self, Read, Write};
 
 #[derive(Default)]
 pub struct REPL {
     command_buffer: Vec<String>,
     vm: VM,
+    asm: Assembler,
 }
 
 impl REPL {
@@ -62,7 +62,9 @@ impl REPL {
 
                     match program(CompleteStr(&source)) {
                         Ok((_rest, program)) => {
-                            self.vm.program.append(&mut program.to_bytes());
+                            self.vm
+                                .program
+                                .append(&mut program.to_bytes(&self.asm.symbols));
                         }
                         Err(e) => {
                             println!("Unable to parse input: {:?}", e);
@@ -97,7 +99,7 @@ impl REPL {
                     // self.vm.run_once();
 
                     if let Ok((_rest, parsed_program)) = program(CompleteStr(buffer)) {
-                        let bytecode = parsed_program.to_bytes();
+                        let bytecode = parsed_program.to_bytes(&self.asm.symbols);
                         bytecode.iter().for_each(|byte| self.vm.add_byte(*byte));
                         self.vm.run_once();
                     } else {

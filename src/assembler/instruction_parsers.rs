@@ -1,9 +1,12 @@
-use crate::assembler::label_parsers::label_declaration;
-use crate::assembler::opcode_parsers::*;
-use crate::assembler::operand_parsers::{integer_operand, operand};
-use crate::assembler::register_parsers::register;
-use crate::assembler::Token;
+use super::label_parsers::label_declaration;
+use super::opcode_parsers::*;
+use super::operand_parsers::{integer_operand, operand};
+use super::register_parsers::register;
+use super::SymbolTable;
+use super::Token;
+use byteorder::{LittleEndian, WriteBytesExt};
 use nom::types::CompleteStr;
+
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub struct AssemblerInstruction<'a> {
     pub label: Option<Token<'a>>,
@@ -28,7 +31,7 @@ impl<'a> AssemblerInstruction<'a> {
             None
         }
     }
-    fn extract_operand_bytes(t: Token, results: &mut Vec<u8>) {
+    fn extract_operand(t: Token, results: &mut Vec<u8>, symbols: &SymbolTable) {
         match t {
             Token::Op { .. } => {
                 println!("Non-operand in operand field");
@@ -45,13 +48,23 @@ impl<'a> AssemblerInstruction<'a> {
                 results.push(byte2 as u8);
                 results.push(byte1 as u8);
             }
+            Token::LabelUsage { name } => {
+                if let Some(value) = symbols.symbol_value(name) {
+                    let mut wtr = vec![];
+                    wtr.write_u32::<LittleEndian>(value).unwrap();
+                    results.push(wtr[1]);
+                    results.push(wtr[0]);
+                } else {
+                    panic!("No value found for {:?}", name);
+                }
+            }
             _ => {
                 unimplemented!();
             }
         }
     }
 
-    pub fn to_bytes(&self) -> Vec<u8> {
+    pub fn to_bytes(&self, symbols: &SymbolTable) -> Vec<u8> {
         let mut results = Vec::new();
         match &self.opcode {
             Some(Token::Op { code }) => results.push(*code as u8),
@@ -65,7 +78,7 @@ impl<'a> AssemblerInstruction<'a> {
 
         for operand in operands {
             if let Some(t) = operand {
-                AssemblerInstruction::extract_operand_bytes(*t, &mut results);
+                AssemblerInstruction::extract_operand(*t, &mut results, symbols);
             }
         }
 
