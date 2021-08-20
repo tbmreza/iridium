@@ -1,6 +1,6 @@
-use crate::assembler::program_parsers::program;
-use crate::assembler::Assembler;
-use crate::vm::VM;
+use super::assembler::program_parsers::program;
+use super::assembler::Assembler;
+use super::vm::VM;
 use nom::types::CompleteStr;
 use std::io::{self, Read, Write};
 

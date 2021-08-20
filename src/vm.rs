@@ -1,4 +1,4 @@
-use crate::instruction::Opcode;
+use super::instruction::Opcode;
 
 #[derive(Debug, Default)]
 pub struct VM {

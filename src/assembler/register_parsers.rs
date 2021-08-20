@@ -1,8 +1,8 @@
-use crate::assembler::Token;
-use nom::digit;
+use super::Token;
 use nom::types::CompleteStr;
+use nom::{digit, tag, ws};
 
-named!(
+nom::named!(
     pub register<CompleteStr, Token>,
     ws!(
         do_parse!(

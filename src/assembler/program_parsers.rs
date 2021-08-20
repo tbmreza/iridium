@@ -1,6 +1,7 @@
+use super::instruction_parsers::{instruction, AssemblerInstruction};
 use super::SymbolTable;
-use crate::assembler::instruction_parsers::{instruction, AssemblerInstruction};
 use nom::types::CompleteStr;
+use nom::{do_parse, many1};
 
 #[derive(Debug, PartialEq)]
 pub struct Program<'a> {
@@ -18,7 +19,7 @@ impl<'a> Program<'a> {
             })
     }
 }
-named!(
+nom::named!(
     pub program<CompleteStr, Program>,
     do_parse!(
         instructions: many1!(instruction) >>

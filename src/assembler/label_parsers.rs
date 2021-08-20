@@ -1,8 +1,8 @@
-use crate::assembler::Token;
+use super::Token;
 use nom::types::CompleteStr;
-use nom::{alphanumeric, multispace};
+use nom::{alphanumeric, multispace, opt, tag, ws};
 
-named!(
+nom::named!(
     // Looks for a user-defined label, such as `label1:`
     pub label_declaration<CompleteStr, Token>,
     ws!(
@@ -17,7 +17,7 @@ named!(
     )
 );
 
-named!(
+nom::named!(
     // Looks for a user-defined label, such as `label1:`
     pub label_usage<CompleteStr, Token>,
     ws!(
@@ -55,5 +55,4 @@ mod tests {
         let result = label_usage(CompleteStr("test"));
         assert_eq!(result.is_ok(), false);
     }
-
 }

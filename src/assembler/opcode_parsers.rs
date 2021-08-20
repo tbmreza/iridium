@@ -1,9 +1,9 @@
-use crate::assembler::Token;
+use super::Token;
 use crate::instruction::Opcode;
-use nom::alpha1;
 use nom::types::CompleteStr;
+use nom::{alpha1, do_parse, tag_no_case};
 
-named!(pub opcode<CompleteStr, Token>,
+nom::named!(pub opcode<CompleteStr, Token>,
     do_parse!(
         opcode: alpha1 >>
         ({Token::Op {
@@ -12,7 +12,7 @@ named!(pub opcode<CompleteStr, Token>,
     )
 );
 
-named!(pub opcode_load<CompleteStr, Token>,
+nom::named!(pub opcode_load<CompleteStr, Token>,
     do_parse!(
         tag_no_case!("load") >>
         (Token::Op {

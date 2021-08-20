@@ -7,7 +7,7 @@ pub mod program_parsers;
 mod register_parsers;
 
 use self::program_parsers::Program;
-use crate::instruction::Opcode;
+use super::instruction::Opcode;
 use nom::types::CompleteStr;
 use std::str;
 

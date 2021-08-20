@@ -1,13 +1,9 @@
-pub mod assembler;
-pub mod instruction;
-pub mod repl;
-pub mod vm;
-
 #[macro_use]
 extern crate nom;
 extern crate clap;
 
 use clap::{load_yaml, App, Arg, SubCommand};
+use iridium::{assembler, repl, vm};
 
 fn main() {
     let _cli_config = load_yaml!("cli.yml");

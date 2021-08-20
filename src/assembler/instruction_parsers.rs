@@ -6,6 +6,7 @@ use super::SymbolTable;
 use super::Token;
 use byteorder::{LittleEndian, WriteBytesExt};
 use nom::types::CompleteStr;
+use nom::{alt, do_parse, opt};
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub struct AssemblerInstruction<'a> {
@@ -86,7 +87,7 @@ impl<'a> AssemblerInstruction<'a> {
     }
 }
 
-named!(
+nom::named!(
     // Zero args: hlt
     instruction_0<CompleteStr, AssemblerInstruction>,
     do_parse!(
@@ -103,7 +104,7 @@ named!(
     )
 );
 
-named!(
+nom::named!(
     // Two args: load $0 #100
     instruction_2<CompleteStr, AssemblerInstruction>,
     do_parse!(
@@ -122,7 +123,7 @@ named!(
     )
 );
 
-named!(
+nom::named!(
     // Three args: add $0 $1 $2
     instruction_3<CompleteStr, AssemblerInstruction>,
     do_parse!(
@@ -141,7 +142,7 @@ named!(
     )
 );
 
-named!(instruction_combined<CompleteStr, AssemblerInstruction>,
+nom::named!(instruction_combined<CompleteStr, AssemblerInstruction>,
     do_parse!(
         l: opt!(label_declaration) >>
         o: opcode >>
@@ -161,7 +162,7 @@ named!(instruction_combined<CompleteStr, AssemblerInstruction>,
     )
 );
 
-named!(
+nom::named!(
     pub instruction<CompleteStr, AssemblerInstruction>,
     do_parse!(
         ins: alt!(

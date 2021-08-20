@@ -1,11 +1,11 @@
-use crate::assembler::instruction_parsers::AssemblerInstruction;
-use crate::assembler::label_parsers::label_declaration;
-use crate::assembler::operand_parsers::operand;
-use crate::assembler::Token;
-use nom::alpha1;
+use super::instruction_parsers::AssemblerInstruction;
+use super::label_parsers::label_declaration;
+use super::operand_parsers::operand;
+use super::Token;
 use nom::types::CompleteStr;
+use nom::{alpha1, alt, do_parse, opt, tag, ws};
 
-named!(directive_declaration<CompleteStr, Token>,
+nom::named!(directive_declaration<CompleteStr, Token>,
   do_parse!(
       tag!(".") >>
       name: alpha1 >>
@@ -15,7 +15,7 @@ named!(directive_declaration<CompleteStr, Token>,
   )
 );
 
-named!(directive_combined<CompleteStr, AssemblerInstruction>,
+nom::named!(directive_combined<CompleteStr, AssemblerInstruction>,
     ws!(
         do_parse!(
             l: opt!(label_declaration) >>
@@ -37,7 +37,7 @@ named!(directive_combined<CompleteStr, AssemblerInstruction>,
     )
 );
 
-named!(
+nom::named!(
     // Will try to parse out any of the Directive forms
     pub directive<CompleteStr, AssemblerInstruction>,
     do_parse!(
