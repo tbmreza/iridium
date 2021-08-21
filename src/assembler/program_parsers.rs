@@ -14,7 +14,7 @@ impl<'a> Program<'a> {
         instructions
             .iter()
             .fold(Vec::new(), |mut acc, instruction| {
-                acc.append(&mut instruction.to_bytes(symbols));
+                acc.append(&mut instruction.as_bytes(symbols));
                 acc
             })
     }

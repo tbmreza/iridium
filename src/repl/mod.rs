@@ -16,14 +16,15 @@ impl REPL {
         REPL::default()
     }
 
-    fn parse_hex(&mut self, input: &str) -> Vec<u8> {
-        let split = input.split(" ").collect::<Vec<&str>>();
+    // hex speaking repl
+    // fn parse_hex(&mut self, input: &str) -> Vec<u8> {
+    //     let split = input.split(" ").collect::<Vec<&str>>();
 
-        split
-            .iter()
-            .filter_map(|s| u8::from_str_radix(s, 16).ok())
-            .collect::<Vec<u8>>()
-    }
+    //     split
+    //         .iter()
+    //         .filter_map(|s| u8::from_str_radix(s, 16).ok())
+    //         .collect::<Vec<u8>>()
+    // }
 
     pub fn run(&mut self) {
         println!("<welcome_message>");

@@ -24,13 +24,13 @@ impl<'a> AssemblerInstruction<'a> {
         if let AssemblerInstruction {
             label: Some(Token::LabelDecl { name }),
             ..
-        // } = instruction
-        } = self.to_owned()
-        {
-            Some(name)
-        } else {
-            None
-        }
+                // } = instruction
+    } = self.to_owned()
+    {
+        Some(name)
+    } else {
+        None
+    }
     }
     fn extract_operand(t: Token, results: &mut Vec<u8>, symbols: &SymbolTable) {
         match t {
@@ -65,7 +65,8 @@ impl<'a> AssemblerInstruction<'a> {
         }
     }
 
-    pub fn to_bytes(&self, symbols: &SymbolTable) -> Vec<u8> {
+    // pub fn to_bytes(&self, symbols: &SymbolTable) -> Vec<u8> {
+    pub fn as_bytes(&self, symbols: &SymbolTable) -> Vec<u8> {
         let mut results = Vec::new();
         match &self.opcode {
             Some(Token::Op { code }) => results.push(*code as u8),
@@ -77,11 +78,9 @@ impl<'a> AssemblerInstruction<'a> {
 
         let operands = vec![&self.operand1, &self.operand2, &self.operand3];
 
-        for operand in operands {
-            if let Some(t) = operand {
-                AssemblerInstruction::extract_operand(*t, &mut results, symbols);
-            }
-        }
+        operands.into_iter().flatten().for_each(|t| {
+            AssemblerInstruction::extract_operand(*t, &mut results, symbols);
+        });
 
         results
     }

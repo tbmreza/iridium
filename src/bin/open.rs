@@ -1,7 +1,7 @@
-#[macro_use]
-extern crate nom;
 extern crate clap;
+extern crate nom;
 
+#[allow(unused_imports)]
 use clap::{load_yaml, App, Arg, SubCommand};
 use iridium::{assembler, repl, vm};
 
@@ -48,7 +48,7 @@ fn read_file(tmp: &str) -> String {
             let mut contents = String::new();
             match f.read_to_string(&mut contents) {
                 Ok(_) => {
-                    return contents;
+                    contents
                 }
                 Err(e) => {
                     println!("There was an error reading file: {:?}", e);

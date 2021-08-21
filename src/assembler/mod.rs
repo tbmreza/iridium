@@ -114,7 +114,7 @@ impl Assembler {
     fn phase2_process(&mut self, p: &Program) -> Vec<u8> {
         let mut assembled = Vec::new();
         for i in &p.instructions {
-            let mut instruction = i.to_bytes(&self.symbols);
+            let mut instruction = i.as_bytes(&self.symbols);
             assembled.append(&mut instruction);
         }
         assembled
